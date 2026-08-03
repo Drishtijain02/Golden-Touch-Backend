@@ -69,7 +69,7 @@ app.get("/api/health", async (req, res) => {
 
 // Routes
 app.use("/api", apiLimiter);
-app.use("/api/appointments", appointmentLimiter, appointmentRoutes);
+app.use("/api/appointments", appointmentRoutes);
 app.use("/api/auth", loginLimiter, authRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/offers", offerRoutes);
