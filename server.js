@@ -6,6 +6,8 @@ const {
     appointmentLimiter
 } = require("./middleware/rateLimiter");
 const express = require("express");
+const app = express();
+app.set('trust proxy', 1);
 const cors = require("cors");
 
 const supabase = require("./config/supabase");
@@ -15,7 +17,7 @@ const authRoutes = require("./routes/auth");
 const serviceRoutes = require("./routes/services");
 const offerRoutes = require("./routes/offers");
 
-const app = express();
+
 const PORT = process.env.PORT || 5000;
 
 // Middleware
