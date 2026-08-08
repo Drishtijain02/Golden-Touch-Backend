@@ -15,7 +15,6 @@ const authRoutes = require("./routes/auth");
 const serviceRoutes = require("./routes/services");
 const offerRoutes = require("./routes/offers");
 const whatsappRoutes = require("./routes/whatsapp");
-console.log("WhatsApp routes loaded");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
