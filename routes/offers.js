@@ -1,4 +1,4 @@
-console.log("Offers route loaded");
+
 const router = require("express").Router();
 const supabase = require("../config/supabase");
 

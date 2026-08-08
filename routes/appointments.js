@@ -1,5 +1,5 @@
 const { validateAppointment } = require("../middleware/validation");
-console.log(validateAppointment);
+
 const router = require("express").Router();
 const supabase = require("../config/supabase");
 // ---------- GET all (newest first, with optional filters) ----------

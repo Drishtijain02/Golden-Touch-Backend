@@ -28,7 +28,7 @@ The server starts on **http://localhost:5000** by default.
 | ----------------- | -------------------------------------------------------- | ---------------------------------------------------- |
 | `MONGO_URI`       | MongoDB connection string (Atlas or local)               | `mongodb+srv://user:pass@cluster.mongodb.net/allure` |
 | `PORT`            | Port the server listens on (default `5000`)              | `5000`                                               |
-| `ALLOWED_ORIGINS` | Comma-separated list of origins allowed by CORS          | `https://my-app.netlify.app,http://localhost:3000`   |
+| `ALLOWED_ORIGINS` | Comma-separated list of origins allowed by CORS          | `ht`   |
 
 ---
 
