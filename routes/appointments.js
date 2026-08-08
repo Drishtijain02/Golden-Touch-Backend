@@ -82,6 +82,7 @@ router.post("/", validateAppointment, async (req, res) => {
           booking_id: id,
           customer_name: name,
           phone: phone,
+          email: email,
           service: service,
           preferred_date: date,
           preferred_time: time,
