@@ -1,4 +1,5 @@
 const { validateAppointment } = require("../middleware/validation");
+const { sendOwnerBookingEmail } = require("../services/emailService");
 
 const router = require("express").Router();
 const supabase = require("../config/supabase");
@@ -58,14 +59,15 @@ router.post("/", validateAppointment, async (req, res) => {
   try {
 
     const {
-      id,
-      name,
-      phone,
-      service,
-      date,
-      time,
-      msg
-    } = req.body;
+    id,
+    name,
+    phone,
+    email,
+    service,
+    date,
+    time,
+    msg
+} = req.body;
 
     if (!name || !phone || !service) {
       return res.status(400).json({
@@ -91,21 +93,23 @@ router.post("/", validateAppointment, async (req, res) => {
       .single();
 
     if (error) {
+    console.error(error);
 
-      console.error(error);
-
-      return res.status(500).json({
+    return res.status(500).json({
         error: error.message
-      });
-
-    }
-
-    res.status(201).json({
-
-      id: data.booking_id,
-      message: "Appointment booked successfully."
-
     });
+}
+
+try {
+    await sendOwnerBookingEmail(data);
+} catch (emailError) {
+    console.error("Failed to send owner email:", emailError);
+}
+
+res.status(201).json({
+    id: data.booking_id,
+    message: "Appointment booked successfully."
+});
 
   }
 
