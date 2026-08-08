@@ -30,6 +30,24 @@ async function sendOwnerBookingEmail(appointment) {
                 <p style="margin-top: 25px;">
                     Please open the owner dashboard to confirm or manage this appointment.
                 </p>
+                <p style="margin-top: 25px;">
+    Please open the owner dashboard to confirm or manage this appointment.
+</p>
+
+<a href="https://golden-touch-frontend.vercel.app/dashboard.html"
+   style="
+       display:inline-block;
+       margin-top:15px;
+       padding:12px 24px;
+       background:#d4af37;
+       color:#111;
+       text-decoration:none;
+       border-radius:6px;
+       font-weight:bold;
+       font-size:14px;
+   ">
+    Open Owner Dashboard
+</a>
 
                 <p style="color: #999;">
                     Golden Touch Family Salon
