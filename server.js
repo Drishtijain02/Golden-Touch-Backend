@@ -6,8 +6,6 @@ const {
     appointmentLimiter
 } = require("./middleware/rateLimiter");
 const express = require("express");
-const app = express();
-app.set('trust proxy', 1);
 const cors = require("cors");
 
 const supabase = require("./config/supabase");
@@ -16,8 +14,9 @@ const appointmentRoutes = require("./routes/appointments");
 const authRoutes = require("./routes/auth");
 const serviceRoutes = require("./routes/services");
 const offerRoutes = require("./routes/offers");
-
-
+const whatsappRoutes = require("./routes/whatsapp");
+console.log("WhatsApp routes loaded");
+const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -67,10 +66,11 @@ app.get("/api/health", async (req, res) => {
 
 // Routes
 app.use("/api", apiLimiter);
-app.use("/api/appointments", appointmentRoutes);
+app.use("/api/appointments", appointmentLimiter, appointmentRoutes);
 app.use("/api/auth", loginLimiter, authRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/offers", offerRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {
