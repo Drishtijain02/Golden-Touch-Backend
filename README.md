@@ -1,90 +1,514 @@
-# Allure Salon — Backend API
+# 🛠️ Golden Touch Backend
 
-Node.js + Express + MongoDB REST API for managing salon appointments.
+Backend API for the **Golden Touch Beauty Salon & Parlour** website.
+
+# Website link-https://golden-touch-frontend.vercel.app/
+
+This backend powers the salon's appointment booking system, owner dashboard, authentication, database operations and email notifications.
+
+The backend is built using **Node.js + Express.js**, with **Supabase** as the database and authentication layer and **Resend** for transactional email notifications.
 
 ---
 
-## Quick Start (Local)
+## 🌸 About the Project
 
-```bash
-# 1. Install dependencies
-npm install
+The Golden Touch backend was developed as part of a real-world salon website project.
 
-# 2. Create your .env (copy the example and fill in your MongoDB URI)
-cp .env.example .env          # Linux/Mac
-copy .env.example .env         # Windows
+It provides the APIs required for:
 
-# 3. Start the server
-npm start
+* 📅 Creating and managing appointments
+* 👤 Managing customer information
+* 🔐 Owner authentication
+* 📊 Owner dashboard data
+* 📧 Sending appointment notifications
+* 🔄 Updating appointment status
+* ❌ Deleting appointments
+* 🔎 Filtering appointments
+
+The backend communicates with the frontend through REST APIs.
+
+---
+
+## 🏗️ Architecture
+
+```text
+                 ┌─────────────────────┐
+                 │   Golden Touch      │
+                 │      Frontend       │
+                 └──────────┬──────────┘
+                            │
+                            │ REST API
+                            ▼
+                 ┌─────────────────────┐
+                 │   Express.js API    │
+                 │      Backend        │
+                 └──────┬───────┬──────┘
+                        │       │
+              ┌─────────┘       └──────────┐
+              ▼                            ▼
+      ┌───────────────┐             ┌───────────────┐
+      │   Supabase    │             │    Resend     │
+      │   PostgreSQL  │             │ Email Service │
+      └───────────────┘             └───────────────┘
+              │                            │
+              ▼                            ▼
+       Appointment Data              Owner Email
+       Admin Profiles
 ```
 
-The server starts on **http://localhost:5000** by default.
+---
+
+## 🚀 Features
+
+### 📅 Appointment API
+
+The backend provides APIs for the complete appointment lifecycle.
+
+Customers can submit:
+
+* Name
+* Phone number
+* Email
+* Service
+* Preferred date
+* Preferred time
+* Special requests
+
+Each appointment is assigned a booking ID and initially receives the status:
+
+```text
+Pending
+```
 
 ---
 
-## Environment Variables
+### 🔄 Appointment Status Management
 
-| Variable          | Description                                              | Example                                              |
-| ----------------- | -------------------------------------------------------- | ---------------------------------------------------- |
-| `MONGO_URI`       | MongoDB connection string (Atlas or local)               | `mongodb+srv://user:pass@cluster.mongodb.net/allure` |
-| `PORT`            | Port the server listens on (default `5000`)              | `5000`                                               |
-| `ALLOWED_ORIGINS` | Comma-separated list of origins allowed by CORS          | `ht`   |
+Appointments can move through the following workflow:
+
+```text
+Pending
+   ↓
+Confirmed
+   ↓
+Completed
+```
+
+Appointments can also be:
+
+```text
+Cancelled
+```
+
+The backend validates status changes and prevents invalid status values.
+
+Supported statuses:
+
+```text
+Pending
+Confirmed
+Completed
+Cancelled
+```
 
 ---
 
-## API Endpoints
+## 📡 API Endpoints
 
-| Method   | Path                       | Description                   |
-| -------- | -------------------------- | ----------------------------- |
-| `GET`    | `/api/health`              | Health check + DB status      |
-| `GET`    | `/api/appointments`        | List all (newest first)       |
-| `GET`    | `/api/appointments?status=New` | Filter by status          |
-| `GET`    | `/api/appointments?date=2026-03-17` | Filter by date       |
-| `POST`   | `/api/appointments`        | Create new appointment        |
-| `PATCH`  | `/api/appointments/:id`    | Update appointment status     |
-| `DELETE` | `/api/appointments/:id`    | Delete an appointment         |
+### Get All Appointments
 
-### POST body example
+```http
+GET /appointments
+```
+
+Returns appointments ordered by newest first.
+
+Optional filters:
+
+```http
+GET /appointments?status=Pending
+```
+
+```http
+GET /appointments?date=2026-08-12
+```
+
+---
+
+### Create Appointment
+
+```http
+POST /appointments
+```
+
+Example request:
 
 ```json
 {
-  "id": "abc123",
-  "name": "Priya Sharma",
-  "phone": "9876543210",
+  "id": "GT-1001",
+  "name": "John Doe",
+  "phone": "+919876543210",
+  "email": "john@example.com",
   "service": "Haircut",
-  "date": "2026-03-20",
-  "time": "14:00",
-  "msg": "First visit"
+  "date": "2026-08-15",
+  "time": "15:30",
+  "msg": "Prefer a senior stylist"
 }
 ```
 
-### PATCH body example
+The appointment is stored in Supabase with:
 
-```json
-{ "status": "Confirmed" }
+```text
+status = Pending
 ```
 
-Allowed status values: `New`, `Confirmed`, `Done`, `Cancelled`
+After successful creation, the API returns the booking ID and confirmation message.
 
 ---
 
-## Deploy on Render
+### Update Appointment Status
 
-1. Push this repo to GitHub.
-2. Go to [render.com](https://render.com) → **New → Web Service**.
-3. Connect your GitHub repo.
-4. Settings:
-   - **Build command**: `npm install`
-   - **Start command**: `npm start`
-5. Add environment variables in the Render dashboard:
-   - `MONGO_URI` — your MongoDB Atlas connection string
-   - `ALLOWED_ORIGINS` — your Netlify URL, e.g. `https://allure-salon.netlify.app`
-6. Deploy. Your API will be live at: `https://your-service.onrender.com`
-
-### Final API URL format
-
-```
-https://your-service.onrender.com/api/appointments
+```http
+PUT /appointments/:id
 ```
 
-Use this URL in your frontend's `API_URL` constant.
+Example:
+
+```json
+{
+  "status": "Confirmed"
+}
+```
+
+Supported values:
+
+```text
+Pending
+Confirmed
+Completed
+Cancelled
+```
+
+---
+
+### Delete Appointment
+
+```http
+DELETE /appointments/:id
+```
+
+Deletes the appointment associated with the booking ID.
+
+---
+
+## 📧 Email Notification System
+
+The backend integrates with **Resend** to notify the salon owner whenever a new appointment is created.
+
+### Flow
+
+```text
+Customer submits appointment
+          ↓
+Express API
+          ↓
+Validate appointment
+          ↓
+Save appointment to Supabase
+          ↓
+Send email using Resend
+          ↓
+Owner receives booking details
+```
+
+The email contains information such as:
+
+* Booking ID
+* Customer name
+* Phone number
+* Customer email
+* Service
+* Preferred date
+* Preferred time
+* Special requests
+
+The owner can then open the dashboard and manage the appointment.
+
+---
+
+## 🔐 Authentication
+
+The backend uses **Supabase Authentication** for owner login.
+
+The login process is:
+
+```text
+Owner enters email + password
+              ↓
+      Supabase Auth
+              ↓
+       User authenticated
+              ↓
+     Admin profile fetched
+              ↓
+       Dashboard access
+```
+
+The backend also maintains an `admin_users` table for additional profile information such as:
+
+* User ID
+* Full name
+* Email
+* Role
+
+Example roles:
+
+```text
+owner
+```
+
+---
+
+## 🗄️ Database
+
+The project uses **Supabase PostgreSQL**.
+
+### Appointments
+
+The appointments table stores information including:
+
+```text
+id
+booking_id
+customer_name
+phone
+email
+service
+preferred_date
+preferred_time
+message
+status
+created_at
+```
+
+### Admin Users
+
+The admin profile system stores information such as:
+
+```text
+id
+full_name
+email
+role
+password_hash
+```
+
+Supabase Auth is used for authentication while the application database stores the associated admin profile.
+
+---
+
+## 🧩 Backend Structure
+
+```text
+backend/
+│
+├── config/
+│   ├── supabase.js
+│   └── supabaseAuth.js
+│
+├── middleware/
+│   └── validation.js
+│
+├── routes/
+│   ├── appointments.js
+│   ├── auth.js
+│   └── ...
+│
+├── services/
+│   └── emailService.js
+│
+├── server.js
+│
+├── package.json
+├── package-lock.json
+└── README.md
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology                   | Purpose                              |
+| ---------------------------- | ------------------------------------ |
+| Node.js                      | Backend runtime                      |
+| Express.js                   | REST API framework                   |
+| Supabase                     | PostgreSQL database & authentication |
+| Resend                       | Transactional email                  |
+| JavaScript                   | Backend development                  |
+| Vercel / Deployment Platform | Backend deployment                   |
+
+---
+
+## 🔒 Environment Variables
+
+Create a `.env` file locally:
+
+```env
+PORT=5000
+
+SUPABASE_URL=your_supabase_url
+
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+SUPABASE_AUTH_URL=your_supabase_auth_url
+
+RESEND_API_KEY=your_resend_api_key
+
+OWNER_EMAIL=owner@example.com
+```
+
+⚠️ **Never commit `.env` or secret API keys to GitHub.**
+
+Add this to `.gitignore`:
+
+```text
+.env
+node_modules/
+```
+
+---
+
+## ▶️ Running Locally
+
+### 1. Clone the repository
+
+```bash
+git clone <your-backend-repository-url>
+```
+
+### 2. Enter the project
+
+```bash
+cd golden-touch-backend
+```
+
+### 3. Install dependencies
+
+```bash
+npm install
+```
+
+### 4. Create environment variables
+
+Create:
+
+```text
+.env
+```
+
+and add the required credentials.
+
+### 5. Start the server
+
+For development:
+
+```bash
+npm run dev
+```
+
+Or:
+
+```bash
+node server.js
+```
+
+The API will run on the configured port.
+
+---
+
+## 🔄 Complete Booking Flow
+
+```text
+                    CUSTOMER
+                       │
+                       ▼
+              Appointment Form
+                       │
+                       ▼
+                POST /appointments
+                       │
+                       ▼
+              Express.js Backend
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+         Validation          Supabase
+                                │
+                                ▼
+                         Save Appointment
+                                │
+                                ▼
+                           Resend API
+                                │
+                                ▼
+                         Owner Email
+                                │
+                                ▼
+                        Owner Dashboard
+                                │
+                         ┌──────┴──────┐
+                         ▼             ▼
+                    Confirmed      Completed
+                         │
+                         ▼
+                   WhatsApp
+                  Confirmation
+```
+
+---
+
+## 🎯 Design Goals
+
+The backend was designed with the following goals:
+
+* Provide a clean REST API for the frontend
+* Keep appointment data centralized
+* Automate owner notifications
+* Reduce manual appointment management
+* Provide secure owner authentication
+* Support a simple appointment lifecycle
+* Allow the system to be extended with additional salon-management features
+
+---
+
+## 🔮 Future Improvements
+
+Potential future additions include:
+
+* ⏰ Automated appointment reminders
+* 📧 Promotional/offer email campaigns
+* 📅 Availability and time-slot management
+* 💳 Online payment integration
+* 📊 Revenue and appointment analytics
+* 👥 Customer management
+* ⭐ Review management
+* 📱 SMS notifications
+* 🔔 Real-time dashboard notifications
+
+---
+
+## 👩‍💻 Developer
+
+**Drishti Jain**
+
+Backend developed as part of the **Golden Touch Beauty Salon & Parlour** real-world web application.
+
+The backend is designed to work with the Golden Touch frontend and provide the APIs required for appointment booking, management and owner operations.
+
+---
+
+## 📄 License
+
+This project was developed specifically for **Golden Touch Beauty Salon & Parlour**.
+
+© 2026 Golden Touch Beauty Salon & Parlour
