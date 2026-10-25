@@ -1,6 +1,7 @@
 
 const router = require("express").Router();
 const supabase = require("../config/supabase");
+const authenticateOwner = require("../middleware/authenticateOwner");
 
 // GET all offers
 router.get("/", async (req, res) => {
@@ -23,7 +24,9 @@ router.get("/", async (req, res) => {
 });
 
 // POST new offer
-router.post("/", async (req, res) => {
+
+router.post("/", authenticateOwner, async (req, res) => {
+
     try {
         const {
             title,
@@ -59,7 +62,9 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE offer
-router.put("/:id", async (req, res) => {
+
+router.put("/:id", authenticateOwner, async (req, res) => {
+
 
     try {
 
@@ -104,7 +109,9 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE offer
-router.delete("/:id", async (req, res) => {
+
+router.delete("/:id", authenticateOwner, async (req, res) => {
+
 
     try {
 
