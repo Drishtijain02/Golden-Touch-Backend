@@ -3,9 +3,11 @@ const { sendOwnerBookingEmail } = require("../services/emailService");
 
 const router = require("express").Router();
 const supabase = require("../config/supabase");
+const authenticateOwner =
+    require("../middleware/authenticateOwner");
 // ---------- GET all (newest first, with optional filters) ----------
 // GET all appointments
-router.get("/", async (req, res) => {
+router.get("/", authenticateOwner, async (req, res) => {
   try {
     let query = supabase
       .from("appointments")
@@ -129,7 +131,7 @@ res.status(201).json({
 });
 // ---------- PUT update appointment ----------
 // ---------- PUT update appointment ----------
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticateOwner, async (req, res) => {
   try {
 
     const { status } = req.body;
@@ -186,7 +188,7 @@ router.put("/:id", async (req, res) => {
 
 // ---------- DELETE ----------
 // ---------- DELETE ----------
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateOwner, async (req, res) => {
 
   try {
 
