@@ -48,13 +48,14 @@ router.post("/login", async (req, res) => {
             .eq("id", data.user.id)
             .single();
 
-        if (profileError) {
-
+        if (profileError || !profile) {
+            console.error("Admin profile lookup failed:", profileError);
             return res.status(404).json({
                 error: "Admin profile not found."
             });
-
         }
+
+        
 
         res.json({
 
